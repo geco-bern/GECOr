@@ -51,4 +51,7 @@ format_driver <- function(
 
   # reformat the drivers / unit conversions etc
 
+  # lapse rate corrections?
+
+  # check units solar radiation
 }
