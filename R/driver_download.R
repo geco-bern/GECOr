@@ -33,7 +33,7 @@ driver_download <- function(
     kwargs = list(
       lon = lon,
       lat = lat,
-      var = "2m_temperature",
+      var = var,
       date = paste(start_date, end_date, sep = "/"),
       method = method
     ),
