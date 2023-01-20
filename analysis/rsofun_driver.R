@@ -5,8 +5,9 @@ library(tidyverse)
 library(ecmwfr)
 library(MODISTools)
 source("R/driver_download.R")
+source("R/format_driver.R")
 
-# set your user ID
+# set your ECMWF user ID
 user <- "2088"
 
 # download formatted data
