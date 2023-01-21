@@ -1,5 +1,17 @@
+#' Format an ERA5 based {rsofun} driver
+#'
+#' Uses the ECMWF CDS workflow API to summarize rsofun driver files
+#' on a daily time step.
+#'
+#' @param user a ECMWF CDS user name (number)
+#' @param site_info site info data frame including a site name, location, and
+#'  other ancillary variables
+#'
+#' @return ERA5 based {rsofun} drivers for a point location specified in the
+#'  site_info parameter
+#' @export
 
-format_driver <- function(
+gc_rsofun_driver_era5 <- function(
     user,
     site_info
     ){
@@ -16,7 +28,7 @@ format_driver <- function(
       "total_cloud_cover",
       "snowfall",
       "total_precipitation",
-      "clear_sky_direct_solar_radiation_at_surface"
+      'surface_solar_radiation_downwards'
     ),
     methods = c(
       "mean",
@@ -27,17 +39,29 @@ format_driver <- function(
       "mean",
       "sum",
       "sum",
-      "max"
+      "mean"
+    ),
+    product = c(
+      'reanalysis-era5-land',
+      'reanalysis-era5-land',
+      'reanalysis-era5-land',
+      'reanalysis-era5-land',
+      'reanalysis-era5-land',
+      'reanalysis-era5-single-levels',
+      'reanalysis-era5-land',
+      'reanalysis-era5-land',
+      'reanalysis-era5-land'
     )
   )
 
   # download all drivers, use site info
   # to determine locality etc
   drivers <- apply(settings, 1, function(x){
-    output <- driver_download(
+    output <- gc_dl_era5(
       user = user,
       lon = 20,
       lat = 50,
+      product = x['product'],
       var = x["variables"],
       start_date = "2021-01-01",
       end_date = "2021-03-30",

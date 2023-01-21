@@ -14,11 +14,12 @@
 #' requested variable
 #' @export
 
-driver_download <- function(
+gc_dl_era5 <- function(
     user,
     lat,
     lon,
     var,
+    product,
     start_date,
     end_date,
     method = 'mean'
@@ -30,10 +31,10 @@ import cdstoolbox as ct
 
 @ct.application()
 @ct.output.download()
-def daily_data(lon, lat, var, date, method):
+def daily_data(lon, lat, var, product, date, method):
 
     data = ct.catalogue.retrieve(
-        'reanalysis-era5-single-levels',
+        product,
         {
           'variable': var,
           'area': [lat + 0.25, lon - 0.25, lat - 0.25, lon + 0.25],
@@ -69,6 +70,7 @@ def daily_data(lon, lat, var, date, method):
       lon = lon,
       lat = lat,
       var = var,
+      product = product,
       date = paste(start_date, end_date, sep = "/"),
       method = method
     ),
