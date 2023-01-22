@@ -6,6 +6,8 @@
 #' @param lat latitude
 #' @param lon longitude
 #' @param var CDS variable of interest
+#' @param product CDS product to query
+#' @param filename output filename (CSV)
 #' @param start_date start date as YYYY-MM-DD
 #' @param end_date end date as YYYY-MM-DD
 #' @param method aggregation method (mean, max, min, sum)
@@ -14,12 +16,13 @@
 #' requested variable
 #' @export
 
-gc_dl_era5 <- function(
+gc_era5_request <- function(
     user,
     lat,
     lon,
     var,
     product,
+    filename,
     start_date,
     end_date,
     method = 'mean'
@@ -37,7 +40,7 @@ def daily_data(lon, lat, var, product, date, method):
         product,
         {
           'variable': var,
-          'area': [lat + 0.25, lon - 0.25, lat - 0.25, lon + 0.25],
+          'area': [lat + 0.05, lon - 0.05, lat - 0.05, lon + 0.05],
           'product_type': 'reanalysis',
           'date' : date,
           'time': [
@@ -75,21 +78,8 @@ def daily_data(lon, lat, var, product, date, method):
       method = method
     ),
     workflow_name = "daily_data",
-    target = "data.csv"
+    target = filename
   )
 
-  # download the data
-  file <- wf_request(
-    user = user,
-    request,
-    transfer = TRUE
-  )
-
-  if(!inherits(file, "try-error")) {
-    df <- read.table(file, sep = ",", header = TRUE)
-    df <- df[,c(1,5)]
-    return(df)
-  } else {
-    message("failed download")
-  }
+  return(request)
 }

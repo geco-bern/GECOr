@@ -16,10 +16,12 @@ gc_rsofun_driver_era5 <- function(
     site_info
     ){
 
+  print(site_info)
+
   # format settings to use  during
   # the download
   settings <- data.frame(
-    variables = c(
+    variable = c(
       "2m_temperature",
       "2m_temperature",
       "2m_temperature",
@@ -30,7 +32,7 @@ gc_rsofun_driver_era5 <- function(
       "total_precipitation",
       'surface_solar_radiation_downwards'
     ),
-    methods = c(
+    method = c(
       "mean",
       "min",
       "max",
@@ -42,40 +44,64 @@ gc_rsofun_driver_era5 <- function(
       "mean"
     ),
     product = c(
-      'reanalysis-era5-land',
-      'reanalysis-era5-land',
-      'reanalysis-era5-land',
-      'reanalysis-era5-land',
-      'reanalysis-era5-land',
       'reanalysis-era5-single-levels',
-      'reanalysis-era5-land',
-      'reanalysis-era5-land',
-      'reanalysis-era5-land'
+      'reanalysis-era5-single-levels',
+      'reanalysis-era5-single-levels',
+      'reanalysis-era5-single-levels',
+      'reanalysis-era5-single-levels',
+      'reanalysis-era5-single-levels',
+      'reanalysis-era5-single-levels',
+      'reanalysis-era5-single-levels',
+      'reanalysis-era5-single-levels'
     )
   )
 
+  settings$filename <- paste0(settings$variable,"_",settings$method,".csv")
+
   # download all drivers, use site info
   # to determine locality etc
-  drivers <- apply(settings, 1, function(x){
-    output <- gc_dl_era5(
+  requests <- apply(settings, 1, function(x){
+    output <- gc_era5_request(
       user = user,
-      lon = 20,
-      lat = 50,
+      lon = site_info$lon,
+      lat = site_info$lat,
       product = x['product'],
-      var = x["variables"],
-      start_date = "2021-01-01",
-      end_date = "2021-03-30",
-      method = x["methods"]
+      var = x["variable"],
+      filename = x["filename"],
+      start_date = site_info$date_start,
+      end_date = site_info$date_end,
+      method = x["method"]
     )
     return(output)
   })
 
-  # combine the drivers
-  drivers_agg <- bind_cols(drivers)
+  # download the data
+  files <- wf_request_batch(
+    user = user,
+    requests,
+    time_out = 3 * 3600, # 3 hour time out
+    workers = 9
+  )
 
-  # reformat the drivers / unit conversions etc
+  if(!inherits(files, "try-error")) {
+    drivers <- lapply(files, function(file){
 
-  # lapse rate corrections?
+      df <- read.table(file, sep = ",", header = TRUE)
+      df <- df[,c(1,5)]
+    })
 
-  # check units solar radiation
+    # combine the drivers
+    forcing <- bind_cols(drivers)
+
+    # reformat the drivers / unit conversions etc
+
+    # lapse rate corrections?
+
+    # check units solar radiation
+
+  } else {
+    message("failed download")
+  }
+
+  return(dplyr::tibble(site_info, forcing))
 }
