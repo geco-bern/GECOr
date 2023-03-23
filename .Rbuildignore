@@ -6,8 +6,6 @@
 ^analysis$
 ^data-raw$
 ^benchmarking$
-^Rscripts$
-^Rold$
 
 # R-markdown files in the root folder.
 ^.*.ods$
