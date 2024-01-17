@@ -1,12 +1,22 @@
 Package: GECOr
 Version: 0.9
 Title: GECO lab tools
-Authors@R: c(person(
+Authors@R: c(
+            person(
                family = "Hufkens",
                given = "Koen",
                email = "koen.hufkens@gmail.com",
-               role = c("aut", "cre")
-               )
+               comment = c(ORCID = "0000-0002-5070-8109"),
+               role = c("aut", "cre")),
+            person(
+              family = "Benjamin",
+              given = "Stocker",
+              email = "benjamin.stocker@gmail.com",
+              comment = c(ORCID = "0000-0003-2697-9096"),
+              role = c("aut")),
+            person(given = "Geocomputation and Earth Observation, University of Bern",
+                role = c("cph", "fnd"))
+           )
 Description: GECO internal tooling for model development, visualization and data wrangling 
 URL: https://github.com/geco-bern/GECOr
 BugReports: https://github.com/geco-bern/GECOr/issues
@@ -17,7 +27,9 @@ Imports:
     dplyr,
     tidyr,
     raster,
-    fs
+    fs,
+    cowplot,
+    scico
 Suggests:
     knitr,
     rmarkdown,
@@ -26,5 +38,5 @@ Suggests:
 License: AGPL-3
 LazyData: true
 ByteCompile: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
