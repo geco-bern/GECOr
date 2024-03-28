@@ -4,7 +4,7 @@ author: "Beni Stocker"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{map2tidy functionality}
+  %\VignetteIndexEntry{Event detection}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,7 +18,6 @@ library(dplyr)
 library(ggplot2)
 library(GECOr)
 library(here)
-
 ```
 
 An event is defined here as consecutive time steps where a certain condition is fulfilled - yielding a vector of a logical (boolean) variable. This vignette demonstrates how such events are derived from the boolean vector using the GECOr function `get_consecutive()`, and a time series data frame re-arranged and labelled with sequential time steps into a given event (`eventstep`), using the GECOr function `align_events()`. 
@@ -27,7 +26,7 @@ An event is defined here as consecutive time steps where a certain condition is 
 
 Read data from the file contained in this repository. This is a data frame containing time series of multiple variables arranged in columns and each time step (day) is a row.
 ```{r}
-df <- readRDS(file = paste0(here(), "/data/df_ch-lae.rds"))
+df <- readRDS(file = here::here("data/df_ch-lae.rds"))
 ```
 
 Below, let's consider the following variables:
