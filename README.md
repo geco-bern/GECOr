@@ -1,5 +1,5 @@
-# The GECOr package
+# GECO group tools
 
-This package includes tools to generate datasets for {rsofun} and {rpmodel}, visualize their data output and provide all-round data wrangling support. The package will aggregate components previously found scattered around various other packages, where they were a poor fit or did not consolidate into a coherent whole.
+A collection of diverse functions to serve data wrangling and visualisations for research by the research group for Geocomputation and Earth Observation (GECO), University of Bern. 
 
-The package is aimed at internal GECO use, but open to others. The package is provided AS IS, with not support provided to external parties.
+The package is aimed at GECO-internal use, but open to others. The package is provided AS IS, with not support provided to external parties.

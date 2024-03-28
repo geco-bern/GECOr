@@ -4,6 +4,11 @@
 #'
 #' @param obj An object, either a \code{SpatRaster} (returned from a \code{terra::rast()} function call),
 #' or a list returned from a \code{GECOr::read_nc_onefile()} function call.
+#' @param varnam A charachter string specifying the variable name. Optional and
+#' used only if \code{obj} is a \code{SpatRaster} with multiple variables. If
+#' \code{obj} is a rbeni-nc object (returned by \code{read_nc_onefile()}),
+#' \code{varnam} must be provided (a character string specifying the variable
+#' name in \code{obj$vars[[varnam]]}).
 #' @param nbin An integer specifying the number of bins used for the color key.
 #' @param maxval A numeric value specifying the maximum value for which the color key is to be extended. Defaults
 #' to \code{NA} (the 99\% quantile of values is used).
@@ -40,20 +45,18 @@
 #' @param combine A boolean specifying whether the map and the colorscale should be combined using cowplot.
 #' Defaults to \code{TRUE}. If \code{FALSE}, a list of elements are retruned, where elements are the ggplot2 plot object
 #' and the coloscale object returned by the call to \link{plot_discrete_cbar}.
-#' @param varnam If \code{obj} is a rbeni-nc object (returned by \code{read_nc_onefile()}), \code{varnam} must be
-#' provided (a character string specifying the variable name in \code{obj$vars[[varnam]]}).
 #'
 #' @return A ggplot object for a global map plot.
 #' @export
 #'
-plot_map4 <- function(obj, maxval = NA, breaks = NA, lonmin = -180, lonmax = 180, latmin = -90, latmax = 90,
+plot_map4 <- function(obj, varnam = NA, maxval = NA, breaks = NA, lonmin = -180, lonmax = 180, latmin = -90, latmax = 90,
                       nbin = 10, legend_title = waiver(), legend_direction = "vertical",
                       colorscale = viridis::viridis, color_ocean = "azure3", invert = -1, do_reproj = FALSE,
                       hillshade = FALSE, rivers = FALSE, lakes = FALSE, coast = TRUE, ocean = FALSE,
                       countries = FALSE, dir_ne = "~/data/naturalearth/",
                       states = FALSE, scale = 110, make_discrete = TRUE, use_geom_raster = TRUE,
                       is_boolean = FALSE,
-											plot_title = waiver(), plot_subtitle = waiver(), combine = TRUE, varnam = NULL, ...){
+											plot_title = waiver(), plot_subtitle = waiver(), combine = TRUE, ...){
 
 	## define domain object
 	domain <- c(xmin = lonmin, xmax = lonmax, ymin = latmin, ymax = latmax)
@@ -279,24 +282,28 @@ plot_map4 <- function(obj, maxval = NA, breaks = NA, lonmin = -180, lonmax = 180
 
     ## convert into data frame with longitude (x) and latitude (y)
     ## convert object into data frame
-    df <- as.data.frame(obj, xy = TRUE)
-    names(df) <- c("x", "y", "layer")
+    if (identical(varnam, NA)){
+      df <- as.data.frame(obj, xy = TRUE)
+      names(df) <- c("x", "y", "layer")
+    } else {
+      df <- as.data.frame(obj, xy = TRUE) |>
+        select(x, y, layer = !!varnam)
+    }
 
   } else if (is.element("vars", ls(obj)) && is.element("lat", ls(obj)) && is.element("lon", ls(obj))){
 
     ## is a rbeni-nc element
     if (is.null(varnam)) stop("Error: provide the variable name to be plotted as argument varnam.")
     df <- nc_to_df(obj, varnam = varnam) %>%
-      dplyr::rename(x=lon, y=lat)
+      dplyr::rename(x=lon, y=lat, layer = !!varnam)
 
   } else if (is.data.frame(obj)){
 
     ## is already a data frame. thanks.
     df <- as_tibble(obj) %>%
       dplyr::filter(lon > lonmin & lon < lonmax & lat > latmin & lat < latmax) %>%
-      dplyr::rename(x = lon, y = lat)
-      # dplyr::select(x, y, !!varnam) %>%
-      # setNames(c("x", "y", "layer"))
+      dplyr::rename(x = lon, y = lat) |>
+      select(x, y, layer = !!varnam)
   }
 
 	## of more than one variable is available, make varnam a required argument
@@ -306,11 +313,6 @@ plot_map4 <- function(obj, maxval = NA, breaks = NA, lonmin = -180, lonmax = 180
 	    stop(paste("Aborting. Argument varnam not provided and more than one variable available. Which one to take?"))
 	  }
 	}
-
-	## reduce and rename
-	df <- df %>%
-	  dplyr::select(x, y, !!varnam) %>%
-	  setNames(c("x", "y", "layer"))
 
 	if (is_boolean){
 	  df <- df |>
@@ -387,7 +389,9 @@ plot_map4 <- function(obj, maxval = NA, breaks = NA, lonmin = -180, lonmax = 180
 
 	} else if (class(colorscale)=="character"){
 
-	  if (colorscale %in% c("batlowK", "turku", "tokyo", "lapaz", "batlow", "batlowW", "oslo", "bamako")){
+	  if (colorscale %in% c("batlowK", "turku", "tokyo", "lapaz", "batlow",
+	                        "batlowW", "oslo", "bamako", "navia", "lajolla",
+	                        "lipari")){
 	    colorscale <- scico::scico(nbin, palette = colorscale, direction = invert)
 	  } else {
 	    colorscale <- colorRampPalette( colorscale )( nbin )

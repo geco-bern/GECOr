@@ -1,6 +1,6 @@
 Package: GECOr
 Version: 0.9
-Title: GECO lab tools
+Title: GECO group tools
 Authors@R: c(
             person(
                family = "Hufkens",
@@ -17,7 +17,7 @@ Authors@R: c(
             person(given = "Geocomputation and Earth Observation, University of Bern",
                 role = c("cph", "fnd"))
            )
-Description: GECO internal tooling for model development, visualization and data wrangling 
+Description: A collection of diverse functions to serve data wrangling and visualisations for research by the research group for Geocomputation and Earth Observation (GECO). 
 URL: https://github.com/geco-bern/GECOr
 BugReports: https://github.com/geco-bern/GECOr/issues
 Depends:
@@ -29,7 +29,8 @@ Imports:
     raster,
     fs,
     cowplot,
-    scico
+    scico,
+    ncmeta
 Suggests:
     knitr,
     rmarkdown,
