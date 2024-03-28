@@ -4,7 +4,7 @@ author: "Beni Stocker"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{map2tidy functionality}
+  %\VignetteIndexEntry{Event detection}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
